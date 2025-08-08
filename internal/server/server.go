@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kasariks/send-letter-on-board/internal/db"
 	"github.com/kasariks/send-letter-on-board/internal/handlers"
 )
 
@@ -14,6 +15,12 @@ type routerData struct {
 }
 
 func CreateServer(logger *log.Logger) (*routerData, error) {
+	database, err := db.NewDb()
+	if err != nil {
+		return nil, err
+	}
+	handlers.InitHandlers(database)
+
 	registerHandlers()
 	router := newRouterData(logger)
 	return router, nil
