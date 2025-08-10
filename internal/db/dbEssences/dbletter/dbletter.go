@@ -1,0 +1,19 @@
+package dbletter
+
+type dbLetter struct {
+	Id       int    `json:"id"`
+	Header   string `json:"header"`
+	Text     string `json:"text"`
+	Owner_id int    `json:"owner_id"`
+}
+
+func newDbLetter(id int, header, text string, owner_id int) *dbLetter {
+	newLetter := &dbLetter{
+		Id:       id,
+		Header:   header,
+		Text:     text,
+		Owner_id: owner_id,
+	}
+
+	return newLetter
+}
