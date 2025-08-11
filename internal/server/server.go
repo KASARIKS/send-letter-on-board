@@ -28,6 +28,8 @@ func CreateServer(logger *log.Logger) (*routerData, error) {
 
 func registerHandlers() {
 	http.HandleFunc("/", handlers.MainHandler)
+	http.HandleFunc("/registrationpage", handlers.RegistrationPage)
+	http.HandleFunc("/registration", handlers.Registration)
 }
 
 func newRouterData(logger *log.Logger) *routerData {
