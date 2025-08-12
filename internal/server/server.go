@@ -30,6 +30,8 @@ func registerHandlers() {
 	http.HandleFunc("/", handlers.MainHandler)
 	http.HandleFunc("/registrationpage", handlers.RegistrationPage)
 	http.HandleFunc("/registration", handlers.Registration)
+	http.HandleFunc("/authorizationpage", handlers.AuthorizationPage)
+	http.HandleFunc("/authorization", handlers.Authorization)
 }
 
 func newRouterData(logger *log.Logger) *routerData {

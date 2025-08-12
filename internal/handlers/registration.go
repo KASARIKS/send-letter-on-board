@@ -14,13 +14,15 @@ func RegistrationPage(w http.ResponseWriter, r *http.Request) {
 func Registration(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
 		http.Error(w, errors.New("request not from form").Error(), http.StatusBadRequest)
+		return
 	}
 
 	if err := addFromForm(r); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-	} else {
-		http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+		return
 	}
+
+	http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 }
 
 func addFromForm(r *http.Request) error {
