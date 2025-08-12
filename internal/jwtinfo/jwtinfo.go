@@ -1,12 +1,45 @@
 package jwtinfo
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"net/http"
+	"time"
 
-const JwtKey = "opiqwjk;njorgeqoijreqgopkftgeolp;kdvfoldkp;afv"
-const JwtExistingTimeMinutes = 15
+	"github.com/golang-jwt/jwt/v5"
+)
+
+const jwtKey = "opiqwjk;njorgeqoijreqgopkftgeolp;kdvfoldkp;afv"
+const jwtExistingTimeMinutes = 15
 
 func ParseToken(tokenString string) (*jwt.Token, error) {
 	return jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
-		return []byte(JwtKey), nil
+		return []byte(jwtKey), nil
 	})
+}
+
+func GetCookieWithJwtByNickname(nickname string) (*http.Cookie, error) {
+	signedToken, err := getSignedToken(nickname)
+	if err != nil {
+		return nil, err
+	}
+
+	cookie := &http.Cookie{
+		Name:     "jwtToken",
+		Value:    signedToken,
+		Expires:  time.Now().Add(time.Minute * jwtExistingTimeMinutes),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	}
+	return cookie, nil
+}
+
+func getSignedToken(nickname string) (string, error) {
+	claims := jwt.MapClaims{
+		"nickname": nickname,
+		"exp":      time.Now().Add(time.Minute * jwtExistingTimeMinutes),
+	}
+
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := jwtToken.SignedString([]byte(jwtKey))
+	return signedToken, err
 }
