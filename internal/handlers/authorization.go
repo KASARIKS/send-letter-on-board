@@ -20,6 +20,9 @@ func Authorization(w http.ResponseWriter, r *http.Request) {
 		password,
 	)
 
+	// Two functions for checking user and getting cookie because different sever statuses
+
+	// MUST BE CHECKING PASSWORD!
 	if err := handlersDb.CheckUserPassword(inputUser); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
