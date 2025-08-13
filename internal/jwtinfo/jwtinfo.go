@@ -11,7 +11,7 @@ const jwtKey = "opiqwjk;njorgeqoijreqgopkftgeolp;kdvfoldkp;afv"
 const jwtExistingTimeMinutes = 15
 
 func ParseToken(tokenString string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(jwtKey), nil
 	})
 }
@@ -36,7 +36,7 @@ func GetCookieWithJwtByNickname(nickname string) (*http.Cookie, error) {
 func getSignedToken(nickname string) (string, error) {
 	claims := jwt.MapClaims{
 		"nickname": nickname,
-		"exp":      time.Now().Add(time.Minute * jwtExistingTimeMinutes),
+		"exp":      time.Now().Add(time.Minute * jwtExistingTimeMinutes).Unix(),
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -7,7 +7,7 @@ type DbLetter struct {
 	Owner_id int    `json:"owner_id"`
 }
 
-func newDbLetter(id int, header, text string, owner_id int) *DbLetter {
+func NewDbLetter(id int, header, text string, owner_id int) *DbLetter {
 	newLetter := &DbLetter{
 		Id:       id,
 		Header:   header,
