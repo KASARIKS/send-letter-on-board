@@ -1,6 +1,7 @@
 package jwtinfo
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -42,4 +43,33 @@ func getSignedToken(nickname string) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := jwtToken.SignedString([]byte(jwtKey))
 	return signedToken, err
+}
+
+func GetNicknameFromToken(token *jwt.Token) (string, error) {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("invalid token format")
+	}
+
+	gottenNickname, ok := claims["nickname"].(string)
+	if !ok {
+		return "", errors.New("invalid claims format")
+	}
+
+	return gottenNickname, nil
+}
+
+func GetTokenFromCookie(cookie *http.Cookie) (*jwt.Token, error) {
+	tokenString := cookie.Value
+
+	token, err := ParseToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return token, nil
 }

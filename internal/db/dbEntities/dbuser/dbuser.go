@@ -21,3 +21,13 @@ func NewDbUser(id int, nickname, unencrypted_password string) *DbUser {
 
 	return newUser
 }
+
+func NewDbUserWithoutId(nickname, unencrypted_password string) *DbUser {
+	encryptedPassword := sha256.Sum256([]byte(unencrypted_password))
+	newUser := &DbUser{
+		Nickname:          nickname,
+		EncryptedPassword: hex.EncodeToString(encryptedPassword[:]),
+	}
+
+	return newUser
+}

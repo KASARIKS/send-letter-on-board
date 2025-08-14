@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/kasariks/send-letter-on-board/internal/db/dbEntities/dbletter"
 	"github.com/kasariks/send-letter-on-board/internal/jwtinfo"
 )
@@ -20,41 +19,27 @@ func SendLetter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authCookie := r.Cookies()[0]
-	authTokenString := authCookie.Value
-
-	authToken, err := jwtinfo.ParseToken(authTokenString)
+	authToken, err := jwtinfo.GetTokenFromCookie(authCookie)
 	if err != nil {
-		http.Error(w, err.Error()+"fff", http.StatusBadRequest)
-		return
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	if !authToken.Valid {
-		http.Error(w, errors.New("invalid token").Error(), http.StatusBadRequest)
-		return
-	}
-
-	claims, ok := authToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, errors.New("invalid token format").Error(), http.StatusBadRequest)
-		return
-	}
-
-	gottenNickname, ok := claims["nickname"].(string)
-	if !ok {
-		http.Error(w, errors.New("invalid claims format").Error(), http.StatusBadRequest)
-		return
+	gottenNickname, err := jwtinfo.GetNicknameFromToken(authToken)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	gottenUser, err := handlersDb.GetUserByNickname(gottenNickname)
 	if err != nil {
-		http.Error(w, err.Error()+"aaa", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	header := r.PostFormValue("header")
 	text := r.PostFormValue("text")
-	newLetter := dbletter.NewDbLetter(0, header, text, gottenUser.Id)
+
+	newLetter := dbletter.NewDBLetterWithoutId(header, text, gottenUser.Id)
 	if err := handlersDb.AddLetter(*newLetter); err != nil {
-		http.Error(w, err.Error()+"ggg", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

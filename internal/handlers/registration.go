@@ -29,7 +29,7 @@ func addFromForm(r *http.Request) error {
 	nickname := r.PostFormValue("nickname")
 	password := r.PostFormValue("password")
 
-	newUser := dbuser.NewDbUser(0, nickname, password)
+	newUser := dbuser.NewDbUserWithoutId(nickname, password)
 	err := handlersDb.AddUser(*newUser)
 
 	return err

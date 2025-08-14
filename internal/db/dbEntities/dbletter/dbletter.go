@@ -17,3 +17,13 @@ func NewDbLetter(id int, header, text string, owner_id int) *DbLetter {
 
 	return newLetter
 }
+
+func NewDBLetterWithoutId(header, text string, owner_id int) *DbLetter {
+	newLetter := &DbLetter{
+		Header:   header,
+		Text:     text,
+		Owner_id: owner_id,
+	}
+
+	return newLetter
+}
