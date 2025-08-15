@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/kasariks/send-letter-on-board/internal/db/dbEntities/dbletter"
+	"github.com/kasariks/send-letter-on-board/internal/db/dbEntities/dbuser"
 	"github.com/kasariks/send-letter-on-board/internal/jwtinfo"
 )
 
@@ -18,20 +19,10 @@ func SendLetter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authCookie := r.Cookies()[0]
-	authToken, err := jwtinfo.GetTokenFromCookie(authCookie)
+	gottenUser, err := getAuthorizedUser(r.Cookies())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-
-	gottenNickname, err := jwtinfo.GetNicknameFromToken(authToken)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-
-	gottenUser, err := handlersDb.GetUserByNickname(gottenNickname)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	header := r.PostFormValue("header")
@@ -44,4 +35,28 @@ func SendLetter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+}
+
+func getAuthorizedUser(cookies []*http.Cookie) (*dbuser.DbUser, error) {
+	if len(cookies) == 0 {
+		return nil, errors.New("not authorized")
+	}
+
+	authCookie := cookies[0]
+	authToken, err := jwtinfo.GetTokenFromCookie(authCookie)
+	if err != nil {
+		return nil, err
+	}
+
+	gottenNickname, err := jwtinfo.GetNicknameFromToken(authToken)
+	if err != nil {
+		return nil, err
+	}
+
+	gottenUser, err := handlersDb.GetUserByNickname(gottenNickname)
+	if err != nil {
+		return nil, err
+	}
+
+	return gottenUser, err
 }
