@@ -18,7 +18,7 @@ func GetAllLetters(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	// add page by get parameter
+	// TODO: add page by get parameter
 	page, _ := strconv.Atoi(r.PostFormValue("page"))
 	letters, err := handlersDb.GetLimitedAmountOfLetters((page-1)*5, 5)
 	if err != nil {
