@@ -8,25 +8,26 @@ import (
 	"github.com/kasariks/send-letter-on-board/internal/db/dbEntities/dbletter"
 )
 
-type ViewData struct {
+// For templates
+type viewData struct {
 	Letters []*dbletter.DbLetter
 }
 
 func GetAllLetters(w http.ResponseWriter, r *http.Request) {
-	// if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-	// 	http.Error(w, errors.New("request not from form").Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	currPageData, err := newPageData(r.URL.Query().Get("page"), r.URL.Query().Get("letters"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	// TODO: add page by get parameter
-	page, _ := strconv.Atoi(r.PostFormValue("page"))
-	letters, err := handlersDb.GetLimitedAmountOfLetters((page-1)*5, 5)
+	letters, err := handlersDb.GetLimitedNumberOfLetters((currPageData.pageNumber-1)*currPageData.lettersQuantity,
+		currPageData.lettersQuantity)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	data := ViewData{
+	data := viewData{
 		Letters: letters,
 	}
 
@@ -37,4 +38,30 @@ func GetAllLetters(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
+}
+
+type pageData struct {
+	pageNumber      int
+	lettersQuantity int
+}
+
+func newPageData(pageNumber, lettersQuantity string) (*pageData, error) {
+	tmpPageNumber, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	tmpLettersQuantity, err := strconv.Atoi(lettersQuantity)
+	if err != nil {
+		return nil, err
+	}
+
+	if tmpLettersQuantity > 10 {
+		tmpLettersQuantity = 10
+	}
+
+	return &pageData{
+		pageNumber:      tmpPageNumber,
+		lettersQuantity: tmpLettersQuantity,
+	}, nil
 }

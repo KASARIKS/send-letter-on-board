@@ -6,7 +6,7 @@ import (
 	"github.com/kasariks/send-letter-on-board/internal/db/dbEntities/dbletter"
 )
 
-func (db *DB) GetLimitedAmountOfLetters(startPosition, lettersAmount int) ([]*dbletter.DbLetter, error) {
+func (db *DB) GetLimitedNumberOfLetters(startPosition, lettersAmount int) ([]*dbletter.DbLetter, error) {
 	rows, err := db.db.Query("SELECT * FROM letters LIMIT :startPosition, :lettersAmount",
 		sql.Named("startPosition", startPosition),
 		sql.Named("lettersAmount", lettersAmount))
