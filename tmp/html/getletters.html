@@ -6,10 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="getletters", method="post">
-        <input type="text" name="page"/>
-        <input type="submit" name="Select page"/>
-    </form>
     <ul>
         {{range .Letters}}
             <li>
@@ -17,5 +13,37 @@
             </li>
         {{end}}
     </ul>
+    <button id="previous-btn"><<</button>
+    <span id="page-number"></span>
+    <button id="next-btn">>></button>
+
+    <script>
+        let pageNumSpan = document.getElementById("page-number")
+        let prevBtn = document.getElementById("previous-btn")
+        let nextBtn = document.getElementById("next-btn")
+        let form = document.getElementById("main-form")
+
+        const urlParams = new URLSearchParams(window.location.search)
+        const myParam = urlParams.get('page')
+        let pageNumber = parseInt(myParam)
+
+        let lettersQuantity = 5
+        pageNumSpan.innerHTML = pageNumber
+        const url = `getletters`
+
+        function redirectURL(pageURL, queryParams) {
+            let query = Object.keys(queryParams).map(key => `${key}=${encodeURIComponent(queryParams[key])}`).join('&')
+            window.location.href = pageURL+'?'+query
+        }
+
+        prevBtn.addEventListener("click", () => {
+            pageNumSpan.innerHTML = --pageNumber
+            redirectURL(url, {page:`${pageNumber}`, letters:`${lettersQuantity}`})
+        })
+        nextBtn.addEventListener("click", () => { 
+            pageNumSpan.innerHTML = ++pageNumber
+            redirectURL(url, {page:`${pageNumber}`, letters:`${lettersQuantity}`})
+        })
+    </script>
 </body>
 </html>
