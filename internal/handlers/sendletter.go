@@ -42,7 +42,8 @@ func getAuthorizedUser(cookies []*http.Cookie) (*dbuser.DbUser, error) {
 		return nil, errors.New("not authorized")
 	}
 
-	authCookie := cookies[0]
+	// In future should change this cookie check
+	authCookie := cookies[len(cookies)-1]
 	authToken, err := jwtinfo.GetTokenFromCookie(authCookie)
 	if err != nil {
 		return nil, err

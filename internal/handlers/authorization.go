@@ -14,8 +14,7 @@ func AuthorizationPage(w http.ResponseWriter, r *http.Request) {
 func Authorization(w http.ResponseWriter, r *http.Request) {
 	nickname := r.PostFormValue("nickname")
 	password := r.PostFormValue("password")
-	inputUser := dbuser.NewDbUser(
-		0,
+	inputUser := dbuser.NewDbUserWithoutId(
 		nickname,
 		password,
 	)
