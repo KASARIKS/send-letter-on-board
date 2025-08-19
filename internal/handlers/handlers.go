@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/kasariks/send-letter-on-board/internal/db"
@@ -14,5 +13,5 @@ func InitHandlers(db *db.DB) {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Basic handler")
+	http.ServeFile(w, r, "./tmp/html/main.html")
 }

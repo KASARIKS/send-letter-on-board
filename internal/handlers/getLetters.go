@@ -14,7 +14,11 @@ type viewData struct {
 }
 
 func GetAllLetters(w http.ResponseWriter, r *http.Request) {
-	currPageData, err := newPageData(r.URL.Query().Get("page"), r.URL.Query().Get("letters"))
+	params := r.URL.Query()
+	pageNumber := params.Get("page")
+	lettersQuantity := params.Get("letters")
+
+	currPageData, err := newPageData(pageNumber, lettersQuantity)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
